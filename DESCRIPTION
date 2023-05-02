@@ -1,0 +1,20 @@
+Package: wildlifeHI
+Type: Package
+Title: Human infrastructure and wildlife tracking data
+Version: 0.1.0
+Authors@R: person(given="Jed", 
+                  family="Long",
+                  role=c("aut","cre"),
+                  email="jed.long@uwo.ca", 
+                  comment = c(ORCID = "0000-0002-2815-0399"))
+Description: This package contains a suite of basic tools for studying how wildlife are impacted by human infrastructure using tracking data. It focuses largely on working with Open Street Map (OSM) data using the package osmdata.
+URL: https://github.com/jedalong/wildlifeHI
+Depends: R (>= 4.2.0)
+Imports:
+	sf,
+	osmdata,
+	move,
+	dplyr
+License: GPL-3
+RoxygenNote: 7.2.3
+Encoding: UTF-8
