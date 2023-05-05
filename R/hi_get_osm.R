@@ -76,7 +76,7 @@ hi_get_osm <- function(move,key='highway',value,bbox,geom="line",poly2line=TRUE)
       suppressWarnings(temp_ln2 <- osmdata$osm_multilines |> st_cast('LINESTRING'))
       temp_ln2$key <- key
       temp_ln2$value <- st_drop_geometry(temp_ln2)[,key]
-      temp_ln <- rbind(temp_po,temp_ln2[,c('osm_id','name','key','value')])
+      temp_ln <- rbind(temp_ln,temp_ln2[,c('osm_id','name','key','value')])
     }
     osm_sf <- rbind(osm_sf,temp_ln)
   }
