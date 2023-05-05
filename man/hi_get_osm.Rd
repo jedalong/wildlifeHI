@@ -16,7 +16,7 @@ the osmdata package)}
 \item{value}{string; OSM value strings for specified key. Default is all values for that key. 
 (see details and \code{?add_osm_feature} from the \code{osmdata} package).}
 
-\item{bbox}{user specified bbox. Default is bbox of move object +/- 10%.}
+\item{bbox}{user specified bbox. Default is bbox of input \code{move} object +/- 10 percent.}
 
 \item{geom}{string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). 
 Default is 'line'.}
@@ -26,7 +26,7 @@ in a variety of situations for example due to loops in many linear features, but
 crossings.}
 }
 \value{
-This function returns an sf object containing OSM data.
+This function returns an \code{sf} object containing OSM data.
 }
 \description{
 This function is a simple wrapper around the core functions of the \code{osmdata} package.
