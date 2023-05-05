@@ -18,7 +18,7 @@
 #' the osmdata package)
 #' @param value string; OSM value strings for specified key. Default is all values for that key. 
 #' (see details and \code{?add_osm_feature} from the \code{osmdata} package).
-#' @param bbox user specified bbox. Default is bbox of move object +/- 10%.
+#' @param bbox user specified bbox. Default is bbox of input \code{move} object +/- 10 percent.
 #' @param geom string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). 
 #' Default is 'line'.
 #' @param poly2line logical (default TRUE);  whether to convert polygon geometry to lines, which is useful 
@@ -26,7 +26,7 @@
 #' crossings.
 #'
 #' @return
-#'  This function returns an sf object containing OSM data.
+#'  This function returns an \code{sf} object containing OSM data.
 #'
 #' @examples
 #' data(fishers)
