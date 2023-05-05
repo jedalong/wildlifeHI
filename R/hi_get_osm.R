@@ -3,21 +3,21 @@
 #' @title Get OSM data for tracking data bbox
 #'
 #' @description
-#'  This function is a simple wrapper around the core functions of the osmdata package.
+#'  This function is a simple wrapper around the core functions of the \code{osmdata} package.
 #'
 #' @details
 #'  This function is normally used internally to get OSM data for a specified tracking dataset,
-#'  but can also be called directly to return the OSM data as an sf object. The parameters can be specified
+#'  but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified
 #'  to choose  which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) 
 #'  line segments, but any OSM feature can be queried. For more information see: 
 #'  https://wiki.openstreetmap.org/wiki/Map_features
 #'
 #' @param move an object of the class \code{move}. For more information on objects of this type see \code{
 #'         help(move)}.
-#' @param key string; OSM key string. Default is 'highway'. (see details and ?add_osm_feature() from 
+#' @param key string; OSM key string. Default is 'highway'. (see details and \code{?add_osm_feature} from 
 #' the osmdata package)
 #' @param value string; OSM value strings for specified key. Default is all values for that key. 
-#' (see details and ?add_osm_feature() from the osmdata package).
+#' (see details and \code{?add_osm_feature} from the \code{osmdata} package).
 #' @param bbox user specified bbox. Default is bbox of move object +/- 10%.
 #' @param geom string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). 
 #' Default is 'line'.
