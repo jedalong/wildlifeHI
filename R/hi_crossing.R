@@ -41,9 +41,10 @@ hi_crossing <- function(move,osmdata, return='move',...){
   
   if (missing(osmdata)){
     osmdata <- hi_get_osm(move, ...)
-    key <- names(osmdata)[3]
-    val <- names(osmdata)[4]
   }
+  
+  key <- names(osmdata)[3]
+  val <- names(osmdata)[4]
   
   sf_pt <- st_as_sf(move)
   sf_pt$trackId <- move@trackId
