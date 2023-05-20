@@ -20,13 +20,10 @@
 #' @param crs_code (optional) a CRS code to "project" data prior to performing buffer analysis.
 #'  Can be used to speed up the processing substantially due to \code{sf} using different libraries for 
 #'  geoprocessing.
-#'  @param return return; one of 'move' (default) or 'sf' or 'buffer. whether to return a \code{move} 
-#'  object or an \code{sf} of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned.
-#'  POLYLINE object (containing the tracking data as a sequence of lines - useful for plotting).
+#'  @param return return; one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned. 
 #' @param ... additional parameters passed to \code{hi_get_osm}
 
-#' @return This function returns either a \code{move} or a \code{sf} POLYLINE object containing the original 
-#' tracking data with one additional column, \code{buf_code}, with the following levels:
+#' @return This function returns by default a \code{move} object containing the tracking data with one additional column, \code{buf_code}, with the following levels:
 #'  - buf_code = 'enters' - movement from outside to inside the buffer zone
 #'  - buf_code = 'within' - movement within the buffer zone
 #'  - buf_code = 'exists' - movement from inside to outside the buffer zone
@@ -40,9 +37,7 @@
 #' \dontrun{
 #' data(fishers)
 #' buf <- hi_buffer(fishers,r=50,crs_code=32618,return='buffer')
-#' ln <- hi_buffer(fishers,r=50,crs_code=32618,return='line')
 #' plot(buf)
-#' plot(ln['buf_code'],add=TRUE)
 #' }
 #' 
 #' @export
@@ -128,16 +123,19 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
       }
     }
   }
-  
-  if (return == 'move'){
-    for (i in ind){
-      buf_code <- append(buf_code,NA,after=i-1)
-    }
-    move$buf_code <- c(buf_code,NA)
-    return(move)
-  } else {
-    sf_ln$buf_code <- buf_code
-    sf_ln <- st_transform(sf_ln,data_crs)
-    return(sf_ln)
+  sf_ln$buf_code <- buf_code
+  sf_ln <- st_transform(sf_ln,data_crs)
+  for (i in ind){
+    buf_code <- append(buf_code,NA,after=i-1)
   }
+  move$buf_code <- c(buf_code,NA)
+  
+  #Return all not noted in documentation but used in Move APp
+  if (return == 'all'){
+    ret_list <- list(move,sf_ln,buf)
+    return(ret_list)
+    
+  } else {
+    return(move)
+  } 
 }
