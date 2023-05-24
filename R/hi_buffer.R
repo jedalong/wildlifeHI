@@ -6,21 +6,14 @@
 #'  This function calculates when a trajectory enters, remains within, and exits a buffer around human infrastructure features.
 #'
 #' @details
-#'  This tool computes when a trajectory enters, remains within, and exits a buffer around human
-#'  infrastructure. It can be used to identify movement in proximity to features. When simply interested
-#'  in the distance to features use \code{hi_distance}.
-#'  The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be 
-#'  specified. See \code{?hi_get_osm()}.
+#'  This tool computes when a trajectory enters, remains within, and exits a buffer around human infrastructure. It can be used to identify movement in proximity to features. When simply interested in the distance to features use \code{hi_distance}. The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be specified. See \code{?hi_get_osm()}.
 #'
-#' @param move an object of the class \code{move}. For more information on objects of this type see \code{
-#'         help(move)}.
+#' @param move an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.
 #' @param r distance (in appropriate units) to buffer the human infrastructure data.
 #' @param osmdata an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
 #' See \code{?hi_get_osm}.
-#' @param crs_code (optional) a CRS code to "project" data prior to performing buffer analysis.
-#'  Can be used to speed up the processing substantially due to \code{sf} using different libraries for 
-#'  geoprocessing.
-#'  @param return return; one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned. 
+#' @param crs_code (optional) a CRS code to "project" data prior to performing buffer analysis. Can be used to speed up the processing substantially due to \code{sf} using different libraries for geoprocessing.
+#'  @param return one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned. 
 #' @param ... additional parameters passed to \code{hi_get_osm}
 
 #' @return This function returns by default a \code{move} object containing the tracking data with one additional column, \code{buf_code}, with the following levels:
@@ -36,8 +29,14 @@
 #' @examples
 #' \dontrun{
 #' data(fishers)
-#' buf <- hi_buffer(fishers,r=50,crs_code=32618,return='buffer')
-#' plot(buf)
+#' fishers_buf <- hi_buffer(fishers,r=50,crs_code=32618)
+#' 
+#' library(mapview)
+#' mapview(fishers_buf['buf_code'])
+#' 
+#' buf_50 <- hi_buffer(fishers,r=50,crs_code=32618,return="buffer")
+#' 
+#' mapview(buf_50) + mapview(fishers_buf['buf_code'])
 #' }
 #' 
 #' @export
@@ -46,12 +45,19 @@
 
 hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   
-  
-  if (missing(osmdata)){
-    osmdata <- hi_get_osm(move, ...)
+  #check input data type
+  if (class(move) != 'MoveStack'){
+    if (class(move) == 'Move'){
+      move <- moveStack(move, forceTz='UTC') #fix this timestamp to correct time zone
+    } else {
+      print('Input Data not of class MoveStack. Returning NULL.')
+      return(NULL)
+    }
   }
   
   sf_pt <- st_as_sf(move)
+  sf_pt$trackId <- trackId(move)
+  sf_pt$jtime <- timestamps(move)
   data_crs <- st_crs(sf_pt)
   
   #Use a projected coordinate system if specified - MAKES BUFFER WORK WAY BETTER
@@ -62,8 +68,16 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
     crs_code = data_crs
   }
   
-  key <- names(osmdata)[3]
-  sf_pt$trackId <- move@trackId
+  # Get OSM data
+  if (missing(osmdata)){
+    osmdata <- hi_get_osm(move, ...)
+  } 
+  
+  #If OSM data is Null return Move object
+  if (is.null(osmdata)){
+    move$buf_code <- NA
+    return(move)
+  }
   
   #Create buffer
   buf <- st_buffer(osmdata,r) |>
@@ -80,8 +94,8 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   sf_p2 <- sf_pt[2:n,]
   id_df <- data.frame(trackId=sf_p1$trackId,
                       trackId2=sf_p2$trackId,
-                      timestamp1=sf_p1$timestamp,
-                      timestamp2=sf_p2$timestamp)
+                      timestamp1=sf_p1$jtime,
+                      timestamp2=sf_p2$jtime)
   sf_ln <- st_sfc(mapply(
     function(a,b){st_cast(st_union(a,b),'LINESTRING')}
     ,sf_p1$geometry,sf_p2$geometry,SIMPLIFY=FALSE),crs=crs_code) |> 
@@ -130,11 +144,11 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   }
   move$buf_code <- c(buf_code,NA)
   
-  #Return all not noted in documentation but used in Move APp
+  #Return "all" not noted in documentation but used in Move APp
   if (return == 'all'){
+    buf <- st_transform(buf,data_crs)
     ret_list <- list(move,sf_ln,buf)
     return(ret_list)
-    
   } else {
     return(move)
   } 

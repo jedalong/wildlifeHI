@@ -6,21 +6,15 @@
 #'  This function calculates whether a trajectory crosses a linear feature of human infrastructure.
 #'
 #' @details
-#'  This tool simply calculates whether crossing occurs from every segment of consectufive tracking fixes in 
-#'  relation to the input humman infrastructure (assumed to be linear features).
-#'  The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be 
-#'  specified. See \code{?hi_get_osm}.
+#'  This tool simply calculates whether crossing occurs from every segment of consecutive tracking fixes in relation to the input human infrastructure (assumed to be linear features).The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be specified. See \code{?hi_get_osm}.
 #'
-#' @param move an object of the class \code{move}. For more information on objects of this type see \code{
-#'         help(move)}.
+#' @param move an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.
 #' @param osmdata an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
 #' See \code{?hi_get_osm}.
-#' @param return one of 'move' (default) or 'sf'. whether to return a \code{move} object or an \code{sf}
-#'  POLYLINE object (containing the tracking data as a sequence of lines - useful for plotting). 
 #' @param ... additional parameters passed to \code{hi_get_osm}
 #'
 #' @return
-#'  This function returns either a \code{move} or a \code{sf} POLYLINE object containing the original tracking
+#'  This function returns a \code{MoveStack} object containing the original tracking
 #'   data with three additional columns:
 #'  - crossing_true: a logical variable indicating whether a segment crossed any linear features.
 #'  - crossing_key: the OSM key of the feature that was crossed in \code{osmdata}
@@ -37,17 +31,38 @@
 # ---- End of roxygen documentation ----
 
 
-hi_crossing <- function(move,osmdata, return='move',...){
+hi_crossing <- function(move,osmdata,...){
   
-  if (missing(osmdata)){
-    osmdata <- hi_get_osm(move, ...)
+  
+  #check input data type
+  if (class(move) != 'MoveStack'){
+    if (class(move) == 'Move'){
+      move <- moveStack(move, forceTz='UTC') #fix this timestamp to correct time zone
+    } else {
+      print('Input Data not of class MoveStack. Returning NULL.')
+      return(NULL)
+    }
   }
   
-  key <- names(osmdata)[3]
-  val <- names(osmdata)[4]
+  #get osm data
+  if (missing(osmdata)){
+    osmdata <- hi_get_osm(move, ...)
+  } 
+  
+  #IF no OSM data is returned for query return NA values
+  if (is.null(osmdata)){
+    move$crossing_true <- NA
+    move$crossing_key <- NA
+    move$crossing_value <- NA
+    move$crossing_count <- NA
+    return(move)
+  }
+  
+  key <- names(osmdata)[2]
+  val <- names(osmdata)[3]
   
   sf_pt <- st_as_sf(move)
-  sf_pt$trackId <- move@trackId
+  sf_pt$trackId <- trackId(move)
   data_crs <- st_crs(move)
   
   # Create linestrings need to fix to do by ID
@@ -87,27 +102,25 @@ hi_crossing <- function(move,osmdata, return='move',...){
   sf_ln$crossing_value <- apply(mat,1,fun_val)
   sf_ln$crossing_count <- apply(mat,1,sum)
   
-  if (return == 'move'){
-    #THIS IS VERY CLUNKY - Need to verify works with many individuals
-    xtrue <- sf_ln$crossing_true
-    xkey <- sf_ln$crossing_key
-    xval <- sf_ln$crossing_value
-    xcount <- sf_ln$crossing_count
+
+  #THIS IS VERY CLUNKY - Need to verify works with many individuals
+  xtrue <- sf_ln$crossing_true
+  xkey <- sf_ln$crossing_key
+  xval <- sf_ln$crossing_value
+  xcount <- sf_ln$crossing_count
     
-    for (i in ind){
-      xtrue <- append(xtrue,NA,after=i-1)
-      xkey <- append(xkey,NA,after=i-1)
-      xval <- append(xval,NA,after=i-1)
-      xcount <- append(xcount,NA,after=i-1)
-    }
-    
-    move$crossing_true <- c(xtrue,NA)
-    move$crossing_key <- c(xkey,NA)
-    move$crossing_value <- c(xval,NA)
-    move$crossing_count <- c(xcount,NA)
-    return(move)
-  } else {
-    return(sf_ln)
+  for (i in ind){
+    xtrue <- append(xtrue,NA,after=i-1)
+    xkey <- append(xkey,NA,after=i-1)
+    xval <- append(xval,NA,after=i-1)
+    xcount <- append(xcount,NA,after=i-1)
   }
+    
+  move$crossing_true <- c(xtrue,NA)
+  move$crossing_key <- c(xkey,NA)
+  move$crossing_value <- c(xval,NA)
+  move$crossing_count <- c(xcount,NA)
+  return(move)
+
 }
 

@@ -1,29 +1,19 @@
 # ---- roxygen documentation ----
 #
-#' @title Get OSM data for tracking data bbox
+#' @title Get OSM data for Move object
 #'
 #' @description
 #'  This function is a simple wrapper around the core functions of the \code{osmdata} package.
 #'
 #' @details
-#'  This function is normally used internally to get OSM data for a specified tracking dataset,
-#'  but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified
-#'  to choose  which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) 
-#'  line segments, but any OSM feature can be queried. For more information see: 
-#'  https://wiki.openstreetmap.org/wiki/Map_features
+#'  This function is normally used internally to get OSM data for a specified tracking dataset, but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified to choose  which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) line segments, but any OSM feature can be queried. For more information see: https://wiki.openstreetmap.org/wiki/Map_features
 #'
-#' @param move an object of the class \code{move}. For more information on objects of this type see \code{
-#'         help(move)}.
-#' @param key string; OSM key string. Default is 'highway'. (see details and \code{?add_osm_feature} from 
-#' the osmdata package)
-#' @param value string; OSM value strings for specified key. Default is all values for that key. 
-#' (see details and \code{?add_osm_feature} from the \code{osmdata} package).
+#' @param move an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.
+#' @param key string; OSM key string. Default is 'highway'. (see details and \code{?add_osm_feature} from the osmdata package)
+#' @param value string; OSM value strings for specified key. Default is all values for that key. (see details and \code{?add_osm_feature} from the \code{osmdata} package).
 #' @param bbox user specified bbox. Default is bbox of input \code{move} object +/- 10 percent.
-#' @param geom string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). 
-#' Default is 'line'.
-#' @param poly2line logical (default TRUE);  whether to convert polygon geometry to lines, which is useful 
-#' in a variety of situations for example due to loops in many linear features, but also to look at border
-#' crossings.
+#' @param geom string; the geometry type to return ('point', 'line', 'polygon' or combination thereo). Default is 'line'.
+#' @param poly2line logical (default TRUE);  whether to convert polygon geometry to lines, which is useful in a variety of situations for example due to loops in many linear features, but also to look at border crossings.
 #'
 #' @return
 #'  This function returns an \code{sf} object containing OSM data. If the OSM query times out, a note is printed on the screen and the function returns \code{NULL}.
@@ -81,44 +71,49 @@ hi_get_osm <- function(move,key='highway',value,bbox,geom="line",poly2line=TRUE)
   
   osm_sf <- NULL
   if ('point' %in% geom) {
-    temp_pt <- osmdata$osm_points
-    if (length(temp_pt)>0) {
-      temp_pt$key <- key
-      temp_pt$value <- st_drop_geometry(temp_pt)[,key]
-      osm_sf <- rbind(osm_sf,temp_pt[,c('osm_id','name','key','value')])
+    temp <- osmdata$osm_points
+    if (is.null(temp$osm_id)) { temp$osm_id <- row.names(temp)}
+    if (length(temp)>0) {
+      temp$key <- key
+      temp$value <- st_drop_geometry(temp)[,key]
+      osm_sf <- rbind(osm_sf,temp[,c('osm_id','key','value')])
     }
   } 
   if ('line' %in% geom) {
-    temp_ln <- osmdata$osm_lines
-    if (length(temp_ln)>0) {
-      temp_ln$key <- key
-      temp_ln$value <- st_drop_geometry(temp_ln)[,key]
-      temp_ln <- temp_ln[,c('osm_id','name','key','value')]
+    temp <- osmdata$osm_lines
+    if (is.null(temp$osm_id)) { temp$osm_id <- row.names(temp)}
+    if (length(temp)>0) {
+      temp$key <- key
+      temp$value <- st_drop_geometry(temp)[,key]
+      temp <- temp[,c('osm_id','key','value')]
       if (!is.null(osmdata$osm_multilines)){
-        suppressWarnings(temp_ln2 <- osmdata$osm_multilines |> st_cast('LINESTRING'))
-        temp_ln2$key <- key
-        temp_ln2$value <- st_drop_geometry(temp_ln2)[,key]
-        temp_ln <- rbind(temp_ln,temp_ln2[,c('osm_id','name','key','value')])
+        suppressWarnings(temp2 <- osmdata$osm_multilines |> st_cast('LINESTRING'))
+        temp2$key <- key
+        temp2$value <- st_drop_geometry(temp2)[,key]
+        if (is.null(temp2$osm_id)) { temp2$osm_id <- row.names(temp2)}
+        temp <- rbind(temp,temp2[,c('osm_id','key','value')])
       }
-      osm_sf <- rbind(osm_sf,temp_ln)
+      osm_sf <- rbind(osm_sf,temp)
     }
   }
   if ('polygon' %in% geom) {
-    temp_po <- osmdata$osm_polygons
-    if (length(temp_po)>0) {
-      temp_po$key <- key
-      temp_po$value <- st_drop_geometry(temp_po)[,key]
-      temp_po <- temp_po[,c('osm_id','name','key','value')]
+    temp <- osmdata$osm_polygons
+    if (is.null(temp$osm_id)) { temp$osm_id <- row.names(temp)}
+    if (length(temp)>0) {
+      temp$key <- key
+      temp$value <- st_drop_geometry(temp_po)[,key]
+      temp <- temp[,c('osm_id','key','value')]
       if (!is.null(osmdata$osm_multipolygons)){
-        suppressWarnings(temp_po2 <- osmdata$osm_multipolygons |> st_cast('POLYGON'))
-        temp_po2$key <- key
-        temp_po2$value <- st_drop_geometry(temp_po2)[,key]
-        temp_po <- rbind(temp_po,temp_po2[,c('osm_id','name','key','value')])
+        suppressWarnings(temp2 <- osmdata$osm_multipolygons |> st_cast('POLYGON'))
+        temp2$key <- key
+        temp2$value <- st_drop_geometry(temp2)[,key]
+        if (is.null(temp2$osm_id)) { temp2$osm_id <- row.names(temp2)}
+        temp <- rbind(temp,temp2[,c('osm_id','key','value')])
       }
       if (poly2line) {
-        suppressWarnings(temp_po <- st_cast(temp_po,"LINESTRING"))
+        suppressWarnings(temp <- st_cast(temp,"LINESTRING"))
       }
-      osm_sf<- rbind(osm_sf, temp_po)
+      osm_sf<- rbind(osm_sf, temp)
     }
   }
   if (is.null(osm_sf)){
