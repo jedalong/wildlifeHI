@@ -33,11 +33,11 @@
 
 hi_crossing <- function(move,osmdata,...){
   
-  
+  tz <- attr(timestamps(move),'tzone')
   #check input data type
   if (class(move) != 'MoveStack'){
     if (class(move) == 'Move'){
-      move <- moveStack(move, forceTz='UTC') #fix this timestamp to correct time zone
+      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)
@@ -45,6 +45,7 @@ hi_crossing <- function(move,osmdata,...){
   }
   
   #get osm data
+  #osmdata <- hi_get_osm(move)
   if (missing(osmdata)){
     osmdata <- hi_get_osm(move, ...)
   } 
@@ -58,68 +59,50 @@ hi_crossing <- function(move,osmdata,...){
     return(move)
   }
   
-  key <- names(osmdata)[2]
-  val <- names(osmdata)[3]
+  #key <- names(osmdata)[2]
+  #val <- names(osmdata)[3]
   
   sf_pt <- st_as_sf(move)
   sf_pt$trackId <- trackId(move)
   data_crs <- st_crs(move)
   
-  # Create linestrings need to fix to do by ID
-  n <- nrow(sf_pt)
-  sf_p1 <- sf_pt[1:(n-1),]
-  sf_p2 <- sf_pt[2:n,]
-  id_df <- data.frame(trackId=sf_p1$trackId,
-                      trackId2=sf_p2$trackId,
-                      timestamp1=sf_p1$timestamp,  ##this might be wrong way to access times
-                      timestamp2=sf_p2$timestamp)
-  sf_ln <- st_sfc(mapply(
-    function(a,b){st_cast(st_union(a,b),'LINESTRING')}
-    ,sf_p1$geometry,sf_p2$geometry,SIMPLIFY=FALSE),crs=data_crs) |> 
-    st_sfc()
+  # Create linestrings
+  sf_ln <- internal_hi_move2line(move) 
   
-  sf_ln <- st_sf(id_df,sf_ln)
-  
-  #Remove line segments between individuals
-  ind <- which(sf_ln$trackId != sf_ln$trackId2)
-  sf_ln <- sf_ln[-ind,]
-  sf_ln <- subset(sf_ln, select = -trackId2)
+  #make sure lines and osmdata same CRS
+  osmdata <- st_transform(osmdata,data_crs)
   
   ## Get TRUE/FALSE intersections
   mat <- st_intersects(sf_ln,osmdata,sparse=FALSE)
   
   fun_key <- function(x){ 
-    f <- factor(st_drop_geometry(osmdata)[x,key])
+    f <- factor(st_drop_geometry(osmdata)[x,'key'])
     levels(f)[which.max(tabulate(f))]
   }
   fun_val <- function(x){ 
-    f <- factor(st_drop_geometry(osmdata)[x,val])
+    f <- factor(st_drop_geometry(osmdata)[x,'value'])
     levels(f)[which.max(tabulate(f))]
   }
   
-  sf_ln$crossing_true <- apply(mat,1,any)
-  sf_ln$crossing_key <- apply(mat,1,fun_key)
-  sf_ln$crossing_value <- apply(mat,1,fun_val)
-  sf_ln$crossing_count <- apply(mat,1,sum)
+  xtrue <- apply(mat,1,any)
+  xkey <- apply(mat,1,fun_key)
+  xval <- apply(mat,1,fun_val)
+  xcount <- apply(mat,1,sum)
   
-
-  #THIS IS VERY CLUNKY - Need to verify works with many individuals
-  xtrue <- sf_ln$crossing_true
-  xkey <- sf_ln$crossing_key
-  xval <- sf_ln$crossing_value
-  xcount <- sf_ln$crossing_count
-    
-  for (i in ind){
-    xtrue <- append(xtrue,NA,after=i-1)
-    xkey <- append(xkey,NA,after=i-1)
-    xval <- append(xval,NA,after=i-1)
-    xcount <- append(xcount,NA,after=i-1)
+  ### crossing data to move object
+  indo <- which(trackId(move) != dplyr::lag(trackId(move)))
+  for (j in indo){
+    xtrue <- append(xtrue,NA,after=(j-1))
+    xkey <- append(xkey,NA,after=(j-1))
+    xval <- append(xval,NA,after=(j-1))
+    xcount <- append(xcount,NA,after=(j-1))
   }
-    
+
   move$crossing_true <- c(xtrue,NA)
   move$crossing_key <- c(xkey,NA)
   move$crossing_value <- c(xval,NA)
   move$crossing_count <- c(xcount,NA)
+  
   return(move)
 
 }

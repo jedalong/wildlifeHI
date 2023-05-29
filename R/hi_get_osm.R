@@ -101,7 +101,7 @@ hi_get_osm <- function(move,key='highway',value,bbox,geom="line",poly2line=TRUE)
     if (is.null(temp$osm_id)) { temp$osm_id <- row.names(temp)}
     if (length(temp)>0) {
       temp$key <- key
-      temp$value <- st_drop_geometry(temp_po)[,key]
+      temp$value <- st_drop_geometry(temp)[,key]
       temp <- temp[,c('osm_id','key','value')]
       if (!is.null(osmdata$osm_multipolygons)){
         suppressWarnings(temp2 <- osmdata$osm_multipolygons |> st_cast('POLYGON'))

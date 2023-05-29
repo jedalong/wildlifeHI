@@ -32,11 +32,11 @@
 
 hi_crossing_loc <- function(move,osmdata,crs_code,...){
   
-  
+  tz <- attr(timestamps(move),'tzone')
   #check input data type
   if (class(move) != 'MoveStack'){
     if (class(move) == 'Move'){
-      move <- moveStack(move, forceTz='UTC') #fix this timestamp to correct time zone
+      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)
@@ -49,47 +49,19 @@ hi_crossing_loc <- function(move,osmdata,crs_code,...){
   }
   if (is.null(osmdata)){ return(NULL)}
   
-  
-  #convert move to sf
-  sf_pt <- st_as_sf(move)
-  sf_pt$trackId <- trackId(move)
-  sf_pt$jtime <- timestamps(move)
+  #grab projection of data
   data_crs <- st_crs(move)
   
-  
   #Use a projected coordinate system if specified - MAKES INTERSECTION WORK WAY BETTER
-  if (!missing(crs_code)){
-    osmdata <- st_transform(osmdata,crs=crs_code)
-    sf_pt <- st_transform(sf_pt,crs=crs_code)
-  } else {
-    crs_code = data_crs
-  }
+  if (missing(crs_code)){ crs_code = data_crs }
+  osmdata <- st_transform(osmdata,crs=crs_code)
   
-  # Create linestrings need to fix to do by ID
-  n <- nrow(sf_pt)
-  sf_p1 <- sf_pt[1:(n-1),]
-  sf_p2 <- sf_pt[2:n,]
-  
-  id_df <- data.frame(trackId=sf_p1$trackId,
-                      trackId2=sf_p2$trackId,
-                      timestamp1=sf_p1$jtime,  
-                      timestamp2=sf_p2$jtime)
-  suppressWarnings({
-    sf_ln <- st_sfc(mapply(
-      function(a,b){st_cast(st_union(a,b),'LINESTRING')}
-      ,sf_p1$geometry,sf_p2$geometry,SIMPLIFY=FALSE),crs=crs_code) |>
-      st_sfc()
-  })
-
-  
-  sf_ln <- st_sf(id_df,sf_ln)
-  
-  #Remove line segments between individuals
-  ind <- which(sf_ln$trackId != sf_ln$trackId2)
-  sf_ln <- sf_ln[-ind,]
-  sf_ln <- subset(sf_ln, select = -trackId2)
+  # Create linestrings
+  sf_ln <- internal_hi_move2line(move) |> 
+    st_transform(crs=crs_code)
   
   #get locations of crossings (lines/poly boundaries)
+  #Check reverse ordering if slow...
   suppressWarnings(sf_int <- st_intersection(sf_ln,osmdata))
   
   sf_int <- st_transform(sf_int,data_crs)

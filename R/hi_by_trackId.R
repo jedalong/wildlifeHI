@@ -26,10 +26,11 @@
 
 hi_by_trackId <- function(move,fun="hi_distance",...){
   
+  tz <- attr(timestamps(move),'tzone')
   #check input data type
   if (class(move) != 'MoveStack'){
     if (class(move) == 'Move'){
-      move <- moveStack(move, forceTz='UTC') #fix this timestamp to correct time zone
+      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)
@@ -37,29 +38,37 @@ hi_by_trackId <- function(move,fun="hi_distance",...){
   }
   
   ids <- unique(trackId(move))
-  data_crs <- st_crs(move)
-  tz <- attr(timestamps(move),'tzone')
-  
   hi_f <- match.fun(fun)
+  output <- NULL
   
   for (id in ids){
-    
     m1 <- move[[id]]
     t1 <- Sys.time()
+    
+    #apply function here
     temp <- hi_f(m1,...)
     
-    
-    if (!is.null(out_move)){
-      out_move <- moveStack(out_move,temp,forceTz=tz)
-    } else {
-      out_move <- temp
-    }
+    #If Null go to next one
+    if (!is.null(temp)){
+      #check if sf for hi_crossing_loc
+      if (class(temp)[1]=='sf'){
+        output <- rbind(output,temp)
+      } else {  #Assume Move class
+        output <- c(output,temp)
+      }
+    } 
+
     t2 <- Sys.time()
-    tdiff <- c(tdiff,t2-t1)
-    print(paste0('processing: ',id,'. Processing Time: ',tdiff))
+    tdiff <- round(t2-t1,digits=1)
+    print(paste0('Processed: ',id,'. Processing Time: ',tdiff,' s'))
   }
   
-  row.names(out_move) <- row.names(move)
-  return(out_move)
+  #Fix up if a Move object
+  if (class(output)[1] != 'sf') { 
+    output <- moveStack(output)
+    row.names(output) <- row.names(move) 
+    }
+    
+  return(output)
 }
 

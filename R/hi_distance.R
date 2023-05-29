@@ -33,10 +33,11 @@
 
 hi_distance <- function(move,osmdata,...){
   
+  tz <- attr(timestamps(move),'tzone')
   #check input data type
   if (class(move) != 'MoveStack'){
     if (class(move) == 'Move'){
-      move <- moveStack(move, forceTz='UTC') #fix this timestamp to correct time zone
+      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)

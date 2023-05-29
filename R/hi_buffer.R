@@ -12,7 +12,7 @@
 #' @param r distance (in appropriate units) to buffer the human infrastructure data.
 #' @param osmdata an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
 #' See \code{?hi_get_osm}.
-#' @param crs_code (optional) a CRS code to "project" data prior to performing buffer analysis. Can be used to speed up the processing substantially due to \code{sf} using different libraries for geoprocessing.
+#' @param crs_code (optional) a CRS code to "project" data prior to performing buffer analysis. Can be used to speed up the processing substantially due to \code{sf} using different libraries for geoprocessing projected vs geographic coordinate systems.
 #'  @param return one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned. 
 #' @param ... additional parameters passed to \code{hi_get_osm}
 
@@ -45,28 +45,19 @@
 
 hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   
+  tz <- attr(timestamps(move),'tzone')
   #check input data type
   if (class(move) != 'MoveStack'){
     if (class(move) == 'Move'){
-      move <- moveStack(move, forceTz='UTC') #fix this timestamp to correct time zone
+      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)
     }
   }
   
-  sf_pt <- st_as_sf(move)
-  sf_pt$trackId <- trackId(move)
-  sf_pt$jtime <- timestamps(move)
-  data_crs <- st_crs(sf_pt)
-  
-  #Use a projected coordinate system if specified - MAKES BUFFER WORK WAY BETTER
-  if (!missing(crs_code)){
-    osmdata <- st_transform(osmdata,crs=crs_code)
-    sf_pt <- st_transform(sf_pt,crs=crs_code)
-  } else {
-    crs_code = data_crs
-  }
+  #save original CRS
+  data_crs <- st_crs(move)
   
   # Get OSM data
   if (missing(osmdata)){
@@ -79,6 +70,10 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
     return(move)
   }
   
+  #Use a projected coordinate system if specified - MAKES BUFFER WORK WAY BETTER
+  if (missing(crs_code)){ crs_code = data_crs }
+  osmdata <- st_transform(osmdata,crs=crs_code)
+  
   #Create buffer
   buf <- st_buffer(osmdata,r) |>
     st_union()
@@ -89,27 +84,15 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   }
   
   # Create linestrings need to fix to do by ID
-  n <- nrow(sf_pt)
-  sf_p1 <- sf_pt[1:(n-1),]
-  sf_p2 <- sf_pt[2:n,]
-  id_df <- data.frame(trackId=sf_p1$trackId,
-                      trackId2=sf_p2$trackId,
-                      timestamp1=sf_p1$jtime,
-                      timestamp2=sf_p2$jtime)
-  sf_ln <- st_sfc(mapply(
-    function(a,b){st_cast(st_union(a,b),'LINESTRING')}
-    ,sf_p1$geometry,sf_p2$geometry,SIMPLIFY=FALSE),crs=crs_code) |> 
-    st_sfc()
+  sf_ln <- internal_hi_move2line(move) |> 
+    st_transform(crs=crs_code)
   
-  sf_ln <- st_sf(id_df,sf_ln)
-  
-  #Remove line segments between individuals
-  ind <- which(sf_ln$trackId != sf_ln$trackId2)
-  sf_ln <- sf_ln[-ind,]
-  sf_ln <- subset(sf_ln, select = -trackId2)
-  
-  with <- st_within(sf_ln,buf,sparse=FALSE)
-  into <- st_intersects(sf_ln,buf,sparse=FALSE)
+  ## There is something about ordering that really matters in terms of these functions:
+  ## https://github.com/r-spatial/sf/issues/1261
+  #with <- st_within(sf_ln,buf,sparse=FALSE) #THIS IS SLOW!!
+  with <- st_contains(buf,sf_ln,sparse=FALSE)
+  #into <- st_intersects(sf_ln,buf,sparse=FALSE) #This is slow also
+  into <- st_intersects(buf,sf_ln,sparse=FALSE)
   
   buf_code <- rep(NA,nrow(sf_ln))
   buf_code[into] <- 'intersects'
@@ -117,7 +100,7 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   i_int <- which(buf_code == 'intersects')
   
   suppressWarnings(ln_pt <- st_cast(sf_ln[i_int,],'POINT'))
-  pt_int <- st_intersects(ln_pt,buf,sparse=FALSE)
+  pt_int <- st_intersects(buf,ln_pt,sparse=FALSE)
   
   for (i in 1:length(i_int)){
     z <- i_int[i]
@@ -138,14 +121,17 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
     }
   }
   sf_ln$buf_code <- buf_code
-  sf_ln <- st_transform(sf_ln,data_crs)
-  for (i in ind){
-    buf_code <- append(buf_code,NA,after=i-1)
+  
+  ### Add buf code to move object
+  indo <- which(trackId(move) != dplyr::lag(trackId(move)))
+  for (j in indo){
+    buf_code <- append(buf_code,NA,after=(j-1))
   }
   move$buf_code <- c(buf_code,NA)
   
   #Return "all" not noted in documentation but used in Move APp
   if (return == 'all'){
+    sf_ln <- st_transform(sf_ln,data_crs)
     buf <- st_transform(buf,data_crs)
     ret_list <- list(move,sf_ln,buf)
     return(ret_list)
