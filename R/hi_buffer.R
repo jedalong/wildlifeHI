@@ -92,34 +92,37 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   #with <- st_within(sf_ln,buf,sparse=FALSE) #THIS IS SLOW!!
   with <- st_contains(buf,sf_ln,sparse=FALSE)
   #into <- st_intersects(sf_ln,buf,sparse=FALSE) #This is slow also
-  into <- st_intersects(buf,sf_ln,sparse=FALSE)
+  into <- st_intersects(sf_ln,buf,sparse=FALSE)
   
   buf_code <- rep(NA,nrow(sf_ln))
   buf_code[into] <- 'intersects'
   buf_code[with] <- 'within'
   i_int <- which(buf_code == 'intersects')
   
-  suppressWarnings(ln_pt <- st_cast(sf_ln[i_int,],'POINT'))
-  pt_int <- st_intersects(buf,ln_pt,sparse=FALSE)
-  
-  for (i in 1:length(i_int)){
-    z <- i_int[i]
-    j <- 2*i-1
-    k <- 2*i
-    if (pt_int[j] == TRUE){
-      if (pt_int[k] == TRUE){
-        buf_code[z] <- 'cross_in'
+  if (length(i_int) > 0){
+    suppressWarnings(ln_pt <- st_cast(sf_ln[i_int,],'POINT'))
+    pt_int <- st_intersects(buf,ln_pt,sparse=FALSE)
+    
+    for (i in 1:length(i_int)){
+      z <- i_int[i]
+      j <- 2*i-1
+      k <- 2*i
+      if (pt_int[j] == TRUE){
+        if (pt_int[k] == TRUE){
+          buf_code[z] <- 'cross_in'
+        } else {
+          buf_code[z] <- 'exit'
+        }
       } else {
-        buf_code[z] <- 'exit'
-      }
-    } else {
-      if (pt_int[k] == TRUE){
-        buf_code[z] <- 'enter'
-      } else {
-        buf_code[z] <- 'cross_out'
+        if (pt_int[k] == TRUE){
+          buf_code[z] <- 'enter'
+        } else {
+          buf_code[z] <- 'cross_out'
+        }
       }
     }
   }
+ 
   sf_ln$buf_code <- buf_code
   
   ### Add buf code to move object
