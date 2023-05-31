@@ -1,0 +1,60 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# wildlifeHI
+
+[![](https://cranlogs.r-pkg.org/badges/wildlifeHI)](https://cran.r-project.org/package=wildlifeHI)
+
+The wildlifeHI package facilitates the integration of human infrastructure data from OpenStreetMap with wildife tracking data. Specifically, it allows users to quickly and efficiently perform various types of analysis by combining wildife tracking data with OSM layers.
+
+## Installation
+
+You can install the latest (under development version) of wildlifeHI from github with:
+
+```{r gh-installation, eval = TRUE, message = FALSE, warning = FALSE}
+devtools::install_github("jedalong/wildlifeHI")
+library(wildlifeHI)
+```
+
+Currently, wildlifeHI is not yet on CRAN, but after adding some more functionality and error checks we plan to submit the package to CRAN. 
+
+## Example
+
+The examples use the fishers data from the \code{move} package as it is a relatively small dataset with a substantial amount of OSM data nearby.
+
+```{r example, message=FALSE}
+library(move)
+data(fishers)
+```
+
+The \code{hi_get_osm} is the main function used to extract OSM data via the tracking data bounding box. The default is to get all "highway" key values, which includes things like roads, paths, and tracks.
+
+```{r}
+osmdata <- hi_get_osm(fishers)
+
+library(mapview)
+mapview(osmdata['value'])
+```
+
+Functionality within \code{wildlifeHI} is comprised of several types of analysis. The simplest is distance analysis which simply identifies the OSM feature nearest to each tracking fix and stores the type and distance in the output move object.
+
+```{r}
+fishers <- hi_distance(fishers)
+boxplot(fishers$nearest_distance ~ fishers$nearest_value)
+```
+
+
+For much more detailed information on the package please see the documentation, I plan to release vignette in due course.
+
+--- END --- 
