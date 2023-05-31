@@ -22,9 +22,8 @@ The wildlifeHI package facilitates the integration of human infrastructure data 
 
 You can install the latest (under development version) of wildlifeHI from github with:
 
-```{r gh-installation, eval = TRUE, message = FALSE, warning = FALSE}
+```{r gh-installation, eval = FALSE, message = FALSE, warning = FALSE}
 devtools::install_github("jedalong/wildlifeHI")
-library(wildlifeHI)
 ```
 
 Currently, wildlifeHI is not yet on CRAN, but after adding some more functionality and error checks we plan to submit the package to CRAN. 
@@ -34,6 +33,7 @@ Currently, wildlifeHI is not yet on CRAN, but after adding some more functionali
 The examples use the fishers data from the \code{move} package as it is a relatively small dataset with a substantial amount of OSM data nearby.
 
 ```{r example, message=FALSE}
+library(wildilfeHI)
 library(move)
 data(fishers)
 ```
@@ -42,9 +42,17 @@ The \code{hi_get_osm} is the main function used to extract OSM data via the trac
 
 ```{r}
 osmdata <- hi_get_osm(fishers)
+head(osmdata)
+```
 
-library(mapview)
-mapview(osmdata['value'])
+We can also take a look at the data on the map. 
+
+```{r}
+### NOT RUN ###
+# library(mapview)
+# mapview(osmdata['value'])
+
+plot(osmdata['value'])
 ```
 
 Functionality within \code{wildlifeHI} is comprised of several types of analysis. The simplest is distance analysis which simply identifies the OSM feature nearest to each tracking fix and stores the type and distance in the output move object.
