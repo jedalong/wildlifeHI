@@ -19,6 +19,7 @@
 #'  - nearest_distance: the distance to the nearest feature in \code{osmdata}.
 #'
 #' @examples
+#' \dontrun{\
 #' library(move)
 #' data(fishers)
 #' fishers_d <- hi_distance(fishers)
@@ -26,6 +27,7 @@
 #' 
 #' fishers_b <- hi_distance(fishers,key='building',geom='polygon')
 #' ## boxplot(nearest_distance ~ nearest_value, fishers_b)
+#' }
 #' 
 #' @export
 #

@@ -19,11 +19,12 @@
 #'  This function returns an \code{sf} object containing OSM data. If the OSM query times out, a note is printed on the screen and the function returns \code{NULL}.
 #'
 #' @examples
+#' \dontrun{
 #' library(move)
 #' data(fishers)
 #' osmdata <- hi_get_osm(fishers)
 #' osmdata_railway <- hi_get_osm(fishers,key='railway')
-#' 
+#' }
 #' 
 #' @export
 #

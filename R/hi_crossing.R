@@ -22,10 +22,12 @@
 #'  - crossing_count: the count of the number of crossing features in \code{osmdata}.
 #'
 #' @examples
+#' \dontrun{
 #' library(move)
 #' data(fishers)
 #' fishers_c <- hi_crossing(fishers)
 #' table(fishers_c$crossing_value)
+#' }
 #' 
 #' @export
 #
