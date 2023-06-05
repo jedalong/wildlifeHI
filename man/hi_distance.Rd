@@ -26,6 +26,7 @@ This function calculates the distance to nearest piece of human infrastructure.
 This tool simply calculates the distance from every tracking fix to the nearest piece of human infrastructure. The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be specified. See \code{?hi_get_osm}.
 }
 \examples{
+\dontrun{\
 library(move)
 data(fishers)
 fishers_d <- hi_distance(fishers)
@@ -33,5 +34,6 @@ fishers_d <- hi_distance(fishers)
 
 fishers_b <- hi_distance(fishers,key='building',geom='polygon')
 ## boxplot(nearest_distance ~ nearest_value, fishers_b)
+}
 
 }

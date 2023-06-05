@@ -29,10 +29,11 @@ This function is a simple wrapper around the core functions of the \code{osmdata
 This function is normally used internally to get OSM data for a specified tracking dataset, but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified to choose  which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) line segments, but any OSM feature can be queried. For more information see: https://wiki.openstreetmap.org/wiki/Map_features
 }
 \examples{
+\dontrun{
 library(move)
 data(fishers)
 osmdata <- hi_get_osm(fishers)
 osmdata_railway <- hi_get_osm(fishers,key='railway')
-
+}
 
 }

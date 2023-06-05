@@ -29,9 +29,11 @@ This function calculates whether a trajectory crosses a linear feature of human 
 This tool simply calculates whether crossing occurs from every segment of consecutive tracking fixes in relation to the input human infrastructure (assumed to be linear features).The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be specified. See \code{?hi_get_osm}.
 }
 \examples{
+\dontrun{
 library(move)
 data(fishers)
 fishers_c <- hi_crossing(fishers)
 table(fishers_c$crossing_value)
+}
 
 }

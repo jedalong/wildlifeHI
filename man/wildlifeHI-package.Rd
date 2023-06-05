@@ -3,9 +3,9 @@
 \docType{package}
 \name{wildlifeHI-package}
 \alias{wildlifeHI-package}
-\title{wildlifeHI: Tools for Linking Wildlife Tracking Data to Human Infrastructure}
+\title{wildlifeHI: Human Infrastructure and Wildlife Trackign Data}
 \description{
-This package contains a suite of basic tools for studying how wildlife are impacted by human infrastructure using tracking data. It focuses largely on working with Open Street Map (OSM) data using the package \code{osmdata}.
+A suite of basic tools for studying how wildlife are impacted by human infrastructure using tracking data. It focuses largely on working with Open Street Map (OSM) data using the package \code{osmdata}. It allows the user to easily perform distance, crossing, and buffer analysis.
 }
 \details{
 The package \code{wildlifeHI} incorporates a basic wrapper function (\code{hi_get_osm}) for extracting OSM data using the \code{osmdata} package. It also has functions for performing different types of analysis to study how wildlife respond to human infrastructure; these include distance analysis, identifying and mapping crossings, and buffer-type analysis. The goal is to include several of these functions as MoveApps.
