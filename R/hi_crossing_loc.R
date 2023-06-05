@@ -34,8 +34,8 @@ hi_crossing_loc <- function(move,osmdata,crs_code,...){
   
   tz <- attr(timestamps(move),'tzone')
   #check input data type
-  if (class(move) != 'MoveStack'){
-    if (class(move) == 'Move'){
+  if (!inherits(move,'MoveStack')){
+    if (inherits(move,'Move')){
       move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')

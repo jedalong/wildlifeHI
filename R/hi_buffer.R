@@ -10,10 +10,9 @@
 #'
 #' @param move an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.
 #' @param r distance (in appropriate units) to buffer the human infrastructure data.
-#' @param osmdata an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
-#' See \code{?hi_get_osm}.
+#' @param osmdata an \code{sf} object containing human infrastructure data formatted similar to OSM data. See \code{?hi_get_osm}.
 #' @param crs_code (optional) a CRS code to "project" data prior to performing buffer analysis. Can be used to speed up the processing substantially due to \code{sf} using different libraries for geoprocessing projected vs geographic coordinate systems.
-#'  @param return one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned. 
+#' @param return one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned. 
 #' @param ... additional parameters passed to \code{hi_get_osm}
 
 #' @return This function returns by default a \code{move} object containing the tracking data with one additional column, \code{buf_code}, with the following levels:
@@ -47,15 +46,14 @@ hi_buffer <- function(move,r=100,osmdata,crs_code,return='move',...){
   
   tz <- attr(timestamps(move),'tzone')
   #check input data type
-  if (class(move) != 'MoveStack'){
-    if (class(move) == 'Move'){
+  if (!inherits(move,'MoveStack')){
+    if (inherits(move,'Move')){
       move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)
     }
   }
-  
   #save original CRS
   data_crs <- st_crs(move)
   

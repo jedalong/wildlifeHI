@@ -14,7 +14,9 @@ Imports:
 	sf,
 	osmdata,
 	move,
-	dplyr
-License: GPL-3
+	dplyr,
+	units,
+	rlang
+License: MIT + file LICENSE
 RoxygenNote: 7.2.3
 Encoding: UTF-8

@@ -4,21 +4,17 @@
 \alias{hi_distance}
 \title{Distance analysis to human infrastructure}
 \usage{
-hi_distance(move, osmdata, return = "move", ...)
+hi_distance(move, osmdata, ...)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{
-help(move)}.}
+\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
 
-\item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
-See \code{?hi_get_osm}.}
+\item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. See \code{?hi_get_osm}.}
 
 \item{...}{additional parameters passed to \code{hi_get_osm}}
-
-\item{value}{return; one of 'move' (default) or 'sf'. whether to return a \code{move} object or an \code{sf} point object.}
 }
 \value{
-This function returns either a \code{move} or a \code{sf} object containing the original tracking data with three additional columns:
+This function returns either a \code{move} object containing the original tracking data with three additional columns:
  - nearest_key: the key of the nearest feature in \code{osmdata}.
  - nearest_value: the value (type) of the nearest feature in \code{osmdata}.
  - nearest_distance: the distance to the nearest feature in \code{osmdata}.
@@ -27,11 +23,10 @@ This function returns either a \code{move} or a \code{sf} object containing the 
 This function calculates the distance to nearest piece of human infrastructure.
 }
 \details{
-This tool simply calculates the distance from every tracking fix to the nearest piece of human infrastructure.
- The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be 
- specified. See \code{?hi_get_osm}.
+This tool simply calculates the distance from every tracking fix to the nearest piece of human infrastructure. The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be specified. See \code{?hi_get_osm}.
 }
 \examples{
+library(move)
 data(fishers)
 fishers_d <- hi_distance(fishers)
 ## boxplot(nearest_distance ~ nearest_value, fishers_d)

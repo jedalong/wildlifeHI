@@ -9,6 +9,7 @@
 #' 
 #' @return
 #'   This function returns a sf line
+#' @importFrom rlang .data
 #'   
 #' @noRd
 # ---- End of roxygen documentation ----
@@ -19,10 +20,11 @@ internal_hi_move2line <- function(move){
 
   tz <- attr(timestamps(move),'tzone')
   #check input data type
-  if (class(move) != 'MoveStack'){
-    if (class(move) == 'Move'){
-      move <- moveStack(move, forceTz=tz)
+  if (!inherits(move,'MoveStack')){
+    if (inherits(move,'Move')){
+      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
+      print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)
     }
   }
@@ -33,8 +35,8 @@ internal_hi_move2line <- function(move){
   sf_pt$SEGID <- 1:(n-1)
   
   sf_ln <- sf_pt |>
-    group_by(SEGID) |>
-    summarize(do_union=FALSE) |>
+    dplyr::group_by(.data$SEGID) |>
+    dplyr::summarize(do_union=FALSE) |>
     st_cast("LINESTRING")
 
   
@@ -50,8 +52,9 @@ internal_hi_move2line <- function(move){
   if (length(ind) > 0){ sf_ln <- sf_ln[-ind,] }
   
   #remove unwanted columns
-  sf_ln <- subset(sf_ln, select = -SEGID)
-  sf_ln <- subset(sf_ln, select = -trackId2)
+  sf_ln <- sf_ln |> 
+    dplyr::select(-"SEGID") |>
+    dplyr::select(-"trackId2")
   
   return(sf_ln)
 }

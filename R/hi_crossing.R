@@ -22,6 +22,7 @@
 #'  - crossing_count: the count of the number of crossing features in \code{osmdata}.
 #'
 #' @examples
+#' library(move)
 #' data(fishers)
 #' fishers_c <- hi_crossing(fishers)
 #' table(fishers_c$crossing_value)
@@ -35,8 +36,8 @@ hi_crossing <- function(move,osmdata,...){
   
   tz <- attr(timestamps(move),'tzone')
   #check input data type
-  if (class(move) != 'MoveStack'){
-    if (class(move) == 'Move'){
+  if (!inherits(move,'MoveStack')){
+    if (inherits(move,'Move')){
       move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')

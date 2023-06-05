@@ -7,26 +7,20 @@
 hi_buffer(move, r = 100, osmdata, crs_code, return = "move", ...)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{
-help(move)}.}
+\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
 
 \item{r}{distance (in appropriate units) to buffer the human infrastructure data.}
 
-\item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
-See \code{?hi_get_osm}.}
+\item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. See \code{?hi_get_osm}.}
 
-\item{crs_code}{(optional) a CRS code to "project" data prior to performing buffer analysis.
-Can be used to speed up the processing substantially due to \code{sf} using different libraries for 
-geoprocessing.
-@param return return; one of 'move' (default) or 'sf' or 'buffer. whether to return a \code{move} 
-object or an \code{sf} of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned.
-POLYLINE object (containing the tracking data as a sequence of lines - useful for plotting).}
+\item{crs_code}{(optional) a CRS code to "project" data prior to performing buffer analysis. Can be used to speed up the processing substantially due to \code{sf} using different libraries for geoprocessing projected vs geographic coordinate systems.}
+
+\item{return}{one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned.}
 
 \item{...}{additional parameters passed to \code{hi_get_osm}}
 }
 \value{
-This function returns either a \code{move} or a \code{sf} POLYLINE object containing the original 
-tracking data with one additional column, \code{buf_code}, with the following levels:
+This function returns by default a \code{move} object containing the tracking data with one additional column, \code{buf_code}, with the following levels:
  - buf_code = 'enters' - movement from outside to inside the buffer zone
  - buf_code = 'within' - movement within the buffer zone
  - buf_code = 'exists' - movement from inside to outside the buffer zone
@@ -40,19 +34,19 @@ tracking data with one additional column, \code{buf_code}, with the following le
 This function calculates when a trajectory enters, remains within, and exits a buffer around human infrastructure features.
 }
 \details{
-This tool computes when a trajectory enters, remains within, and exits a buffer around human
- infrastructure. It can be used to identify movement in proximity to features. When simply interested
- in the distance to features use \code{hi_distance}.
- The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be 
- specified. See \code{?hi_get_osm()}.
+This tool computes when a trajectory enters, remains within, and exits a buffer around human infrastructure. It can be used to identify movement in proximity to features. When simply interested in the distance to features use \code{hi_distance}. The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be specified. See \code{?hi_get_osm()}.
 }
 \examples{
 \dontrun{
 data(fishers)
-buf <- hi_buffer(fishers,r=50,crs_code=32618,return='buffer')
-ln <- hi_buffer(fishers,r=50,crs_code=32618,return='line')
-plot(buf)
-plot(ln['buf_code'],add=TRUE)
+fishers_buf <- hi_buffer(fishers,r=50,crs_code=32618)
+
+library(mapview)
+mapview(fishers_buf['buf_code'])
+
+buf_50 <- hi_buffer(fishers,r=50,crs_code=32618,return="buffer")
+
+mapview(buf_50) + mapview(fishers_buf['buf_code'])
 }
 
 }

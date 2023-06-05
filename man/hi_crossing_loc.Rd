@@ -7,37 +7,31 @@
 hi_crossing_loc(move, osmdata, crs_code, ...)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{
-help(move)}.}
+\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
 
-\item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
-See \code{?hi_get_osm}.}
+\item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. See \code{?hi_get_osm}.}
 
-\item{crs_code}{(optional) a CRS code to "project" data prior to performing intersection analysis.
-Can be used to speed up the processing substantially due to \code{sf} using different libraries for 
-geoprocessing.}
+\item{crs_code}{(optional) a CRS code to "project" data prior to performing intersection analysis. Can be used to speed up the processing substantially due to \code{sf} using different libraries for geoprocessing.}
 
 \item{...}{additional parameters passed to \code{hi_get_osm}}
 }
 \value{
-This function returns a \code{sf} POINT object containing the locations where a trajectory crosses 
- linear features (based on connecting consecutive GPS fixes)
+This function returns a \code{sf} POINT object containing the locations where a trajectory crosses linear features (based on connecting consecutive GPS fixes)
 }
 \description{
 This function calculates where a trajectory crosses a linear feature of human infrastructure.
 }
 \details{
-This tool simply calculates where crossings occurs from tracking fixes in 
- relation to the input human infrastructure (assumed to be linear features).
- The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be 
- specified. See \code{?hi_get_osm()}.
+This tool simply calculates where crossings occurs from tracking fixes in relation to the input human infrastructure (assumed to be linear features). The default is to use any linear road/trail feature defined in the 'highway' key, but any OSM feature can be specified. See \code{?hi_get_osm()}.
 }
 \examples{
 \dontrun{
 data(fishers)
 ## x1 <- hi_crossing_loc(fishers)  #Takes 2270 seconds
 x2 <- hi_crossing_loc(fishers,crs_code=32618)  ## takes 12 seconds
-plot(x2['value'])
+
+libray(mapview)
+mapview(x2['value'])
 }
 
 }

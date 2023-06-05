@@ -12,13 +12,14 @@
 #' @param key string; OSM key string. Default is 'highway'. (see details and \code{?add_osm_feature} from the osmdata package)
 #' @param value string; OSM value strings for specified key. Default is all values for that key. (see details and \code{?add_osm_feature} from the \code{osmdata} package).
 #' @param bbox user specified bbox. Default is bbox of input \code{move} object +/- 10 percent.
-#' @param geom string; the geometry type to return ('point', 'line', 'polygon' or combination thereo). Default is 'line'.
+#' @param geom string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). Default is 'line'.
 #' @param poly2line logical (default TRUE);  whether to convert polygon geometry to lines, which is useful in a variety of situations for example due to loops in many linear features, but also to look at border crossings.
 #'
 #' @return
 #'  This function returns an \code{sf} object containing OSM data. If the OSM query times out, a note is printed on the screen and the function returns \code{NULL}.
 #'
 #' @examples
+#' library(move)
 #' data(fishers)
 #' osmdata <- hi_get_osm(fishers)
 #' osmdata_railway <- hi_get_osm(fishers,key='railway')
@@ -30,6 +31,17 @@
 
 
 hi_get_osm <- function(move,key='highway',value,bbox,geom="line",poly2line=TRUE){
+  
+  tz <- attr(timestamps(move),'tzone')
+  #check input data type
+  if (!inherits(move,'MoveStack')){
+    if (inherits(move,'Move')){
+      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
+    } else {
+      print('Input Data not of class MoveStack. Returning NULL.')
+      return(NULL)
+    }
+  }
   
   if (missing(bbox)){
     bbox <- st_bbox(move)

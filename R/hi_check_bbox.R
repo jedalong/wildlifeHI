@@ -14,6 +14,7 @@
 #'  This function returns a \code{sf} POLYGON object containing the bounding boxes for each individual \code{trackId}within the tracking data. 
 #'
 #' @examples
+#' library(move)
 #' data(fishers)
 #' fishers_bb <- hi_check_bbox(fishers) 
 #' 
@@ -33,14 +34,15 @@ hi_check_bbox <- function(move){
   
   tz <- attr(timestamps(move),'tzone')
   #check input data type
-  if (class(move) != 'MoveStack'){
-    if (class(move) == 'Move'){
+  if (!inherits(move,'MoveStack')){
+    if (inherits(move,'Move')){
       move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
       return(NULL)
     }
   }
+  
   
   ids <- unique(trackId(move))
   bbdf <- data.frame()

@@ -2,43 +2,34 @@
 % Please edit documentation in R/hi_get_osm.R
 \name{hi_get_osm}
 \alias{hi_get_osm}
-\title{Get OSM data for tracking data bbox}
+\title{Get OSM data for Move object}
 \usage{
 hi_get_osm(move, key = "highway", value, bbox, geom = "line", poly2line = TRUE)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{
-help(move)}.}
+\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
 
-\item{key}{string; OSM key string. Default is 'highway'. (see details and \code{?add_osm_feature} from 
-the osmdata package)}
+\item{key}{string; OSM key string. Default is 'highway'. (see details and \code{?add_osm_feature} from the osmdata package)}
 
-\item{value}{string; OSM value strings for specified key. Default is all values for that key. 
-(see details and \code{?add_osm_feature} from the \code{osmdata} package).}
+\item{value}{string; OSM value strings for specified key. Default is all values for that key. (see details and \code{?add_osm_feature} from the \code{osmdata} package).}
 
 \item{bbox}{user specified bbox. Default is bbox of input \code{move} object +/- 10 percent.}
 
-\item{geom}{string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). 
-Default is 'line'.}
+\item{geom}{string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). Default is 'line'.}
 
-\item{poly2line}{logical (default TRUE);  whether to convert polygon geometry to lines, which is useful 
-in a variety of situations for example due to loops in many linear features, but also to look at border
-crossings.}
+\item{poly2line}{logical (default TRUE);  whether to convert polygon geometry to lines, which is useful in a variety of situations for example due to loops in many linear features, but also to look at border crossings.}
 }
 \value{
-This function returns an \code{sf} object containing OSM data.
+This function returns an \code{sf} object containing OSM data. If the OSM query times out, a note is printed on the screen and the function returns \code{NULL}.
 }
 \description{
 This function is a simple wrapper around the core functions of the \code{osmdata} package.
 }
 \details{
-This function is normally used internally to get OSM data for a specified tracking dataset,
- but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified
- to choose  which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) 
- line segments, but any OSM feature can be queried. For more information see: 
- https://wiki.openstreetmap.org/wiki/Map_features
+This function is normally used internally to get OSM data for a specified tracking dataset, but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified to choose  which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) line segments, but any OSM feature can be queried. For more information see: https://wiki.openstreetmap.org/wiki/Map_features
 }
 \examples{
+library(move)
 data(fishers)
 osmdata <- hi_get_osm(fishers)
 osmdata_railway <- hi_get_osm(fishers,key='railway')

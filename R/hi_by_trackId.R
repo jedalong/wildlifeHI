@@ -16,9 +16,10 @@
 #'  This function returns either a \code{move} containing the original tracking data with analysis defined by 'fun' applied. 
 #'
 #' @examples
+#' \dontrun{
 #' data(fishers)
 #' fishers <- hi_by_trackId(fishers,fun="hi_distance",key="highway", value="track") 
-#' 
+#' }
 #' @export
 #
 # ---- End of roxygen documentation ----
@@ -28,8 +29,8 @@ hi_by_trackId <- function(move,fun="hi_distance",...){
   
   tz <- attr(timestamps(move),'tzone')
   #check input data type
-  if (class(move) != 'MoveStack'){
-    if (class(move) == 'Move'){
+  if (!inherits(move,'MoveStack')){
+    if (inherits(move,'Move')){
       move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
     } else {
       print('Input Data not of class MoveStack. Returning NULL.')
