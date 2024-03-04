@@ -7,14 +7,14 @@
 hi_distance(move, osmdata, ...)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
+\item{move}{an object of the class \code{move2}. For more information on objects of this type see \code{help(move2)}.}
 
 \item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. See \code{?hi_get_osm}.}
 
 \item{...}{additional parameters passed to \code{hi_get_osm}}
 }
 \value{
-This function returns either a \code{move} object containing the original tracking data with three additional columns:
+This function returns either a \code{move2} object containing the original tracking data with three additional columns:
  - nearest_key: the key of the nearest feature in \code{osmdata}.
  - nearest_value: the value (type) of the nearest feature in \code{osmdata}.
  - nearest_distance: the distance to the nearest feature in \code{osmdata}.
@@ -28,11 +28,13 @@ This tool simply calculates the distance from every tracking fix to the nearest 
 \examples{
 \dontrun{\
 library(move)
+library(move2)
 data(fishers)
-fishers_d <- hi_distance(fishers)
+fishers2 <- mt_as_move2(fishers)
+fishers_d <- hi_distance(fishers2)
 ## boxplot(nearest_distance ~ nearest_value, fishers_d)
 
-fishers_b <- hi_distance(fishers,key='building',geom='polygon')
+fishers_b <- hi_distance(fishers2,key='building',geom='polygon')
 ## boxplot(nearest_distance ~ nearest_value, fishers_b)
 }
 

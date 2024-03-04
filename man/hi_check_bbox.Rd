@@ -7,25 +7,27 @@
 hi_check_bbox(move)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
+\item{move}{an object of the class \code{move2}. For more information on objects of this type see \code{help(move2)}.}
 }
 \value{
 This function returns a \code{sf} POLYGON object containing the bounding boxes for each individual \code{trackId}within the tracking data.
 }
 \description{
-This function is a a checking tool to investigate the bounding boxes of each \code{trackId} within a \code{MoveStack}.
+This function is a a checking tool to investigate the bounding boxes of each \code{trackId} within a \code{move2} object.
 }
 \details{
-This is a simple tool to look at the bounding boxes of each individual within a \code{MoveStack}. This is useful to explore how large different bounding boxes are prior to performing queries for OSM data using \code{hi_get_osm}. This is often useful when the overall study area is large, but the bounding boxes of individual trajectories are relatively small in comparison.
+This is a simple tool to look at the bounding boxes of each individual within a \code{move2} object. This is useful to explore how large different bounding boxes are prior to performing queries for OSM data using \code{hi_get_osm}. This is often useful when the overall study area is large, but the bounding boxes of individual trajectories are relatively small in comparison.
 }
 \examples{
 library(move)
+library(move2)
 data(fishers)
-fishers_bb <- hi_check_bbox(fishers) 
+fishers2 <- mt_as_move2(fishers)
+fishers_bb <- hi_check_bbox(fishers2) 
 
 \dontrun{
-library(mapview)
-mapview(fishers_bb['trackId'])
+library(ggplot2)
+ggplot() + geom_sf(data=fishers_bb, aes(color = track)) + coord_sf()
 }
 
 

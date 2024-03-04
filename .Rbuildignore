@@ -1,3 +1,12 @@
 ^README\.Rmd$
 ^README-unnamed-chunk-3-1\.png$
 ^README-unnamed-chunk-4-1\.png$
+^.*\.Rproj$
+^\.Rproj\.user$
+^.RData
+^.RHistory
+^.gitignore
+^.gitattributes
+^\testing
+^\.git$
+^testing$

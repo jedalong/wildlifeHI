@@ -1,0 +1,17 @@
+name: wildHi2
+channels:
+  - conda-forge
+dependencies:
+  - geopandas=0.13.0=pyhd8ed1ab_0
+  - movingpandas=0.16.0=pyhd8ed1ab_0
+  - numpy=1.24.3=py311h0b4df5a_0
+  - pandas=2.0.1=py311hf63dbb6_1
+  - pip=23.1.2=pyhd8ed1ab_0
+  - pyproj=3.5.0=py311h095e9de_1
+  - qgis=3.30.2=py311h1e9536a_1
+  - scipy=1.10.1=py311h37ff6ca_3
+  - shapely=2.0.1=py311h343093d_1
+  - urllib3=1.26.15=pyhd8ed1ab_0
+  - pip:
+      - stravacookies==1.3
+prefix: C:\Users\mketchin\AppData\Local\r-miniconda\envs\wildHi2

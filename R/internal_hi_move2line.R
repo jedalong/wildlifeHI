@@ -2,9 +2,9 @@
 #' @title convert move to sf line object
 #'
 #' @description
-#'   Internal function for converting move to a sf line
+#'   Internal function for converting move2 to a sf line
 #'   
-#' @param move a move or moveStack object.
+#' @param move a move2 object.
 #' @param crs_code a CRS code.
 #' 
 #' @return
@@ -17,19 +17,16 @@
 
 
 internal_hi_move2line <- function(move){
-
-  tz <- attr(timestamps(move),'tzone')
-  #check input data type
-  if (!inherits(move,'MoveStack')){
-    if (inherits(move,'Move')){
-      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
-    } else {
-      print('Input Data not of class MoveStack. Returning NULL.')
-      return(NULL)
-    }
+  
+  if(!inherits(move, "move2")){
+    print('Input data not of class move2. Returning NULL.')
+    return(NULL)
   }
   
-  sf_pt <- st_as_sf(move)
+  sf_pt <- move
+  col <- move2::mt_track_id_column(move)
+  tim <- move2::mt_time_column(move)
+  move2::mt_track_id(sf_pt) <- NULL
   n <- nrow(sf_pt)
   sf_pt <- rbind(sf_pt[1:(n-1),], sf_pt[2:n,])
   sf_pt$SEGID <- 1:(n-1)
@@ -40,10 +37,10 @@ internal_hi_move2line <- function(move){
     st_cast("LINESTRING")
 
   
-  id_df <- data.frame(trackId=trackId(move)[1:(n-1)],
-                      trackId2=trackId(move)[2:n],
-                      timestamp1=timestamps(move)[1:(n-1)],
-                      timestamp2=timestamps(move)[2:n])
+  id_df <- data.frame(trackId=move2::mt_track_id(move)[1:(n-1)],
+                      trackId2=move2::mt_track_id(move)[2:n],
+                      timestamp1=move2::mt_time(move)[1:(n-1)],
+                      timestamp2=move2::mt_time(move)[2:n])
   
   sf_ln <- cbind(sf_ln,id_df)
   
@@ -58,3 +55,4 @@ internal_hi_move2line <- function(move){
   
   return(sf_ln)
 }
+

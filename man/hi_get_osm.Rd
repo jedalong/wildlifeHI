@@ -7,13 +7,13 @@
 hi_get_osm(move, key = "highway", value, bbox, geom = "line", poly2line = TRUE)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
+\item{move}{an object of the class \code{move2}. For more information on objects of this type see \code{help(move2)}.}
 
 \item{key}{string; OSM key string. Default is 'highway'. (see details and \code{?add_osm_feature} from the osmdata package)}
 
 \item{value}{string; OSM value strings for specified key. Default is all values for that key. (see details and \code{?add_osm_feature} from the \code{osmdata} package).}
 
-\item{bbox}{user specified bbox. Default is bbox of input \code{move} object +/- 10 percent.}
+\item{bbox}{user specified bbox. Default is bbox of input \code{move2} object +/- 10 percent.}
 
 \item{geom}{string; the geometry type to return ('point', 'line', 'polygon' or combination thereof). Default is 'line'.}
 
@@ -26,14 +26,16 @@ This function returns an \code{sf} object containing OSM data. If the OSM query 
 This function is a simple wrapper around the core functions of the \code{osmdata} package.
 }
 \details{
-This function is normally used internally to get OSM data for a specified tracking dataset, but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified to choose  which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) line segments, but any OSM feature can be queried. For more information see: https://wiki.openstreetmap.org/wiki/Map_features
+This function is normally used internally to get OSM data for a specified tracking dataset, but can also be called directly to return the OSM data as an \code{sf} object. The parameters can be specified to choose which OSM features are returned. The default is to return all 'highway' (i.e., road/trail) line segments, but any OSM feature can be queried. For more information see: https://wiki.openstreetmap.org/wiki/Map_features
 }
 \examples{
 \dontrun{
 library(move)
+library(move2)
 data(fishers)
-osmdata <- hi_get_osm(fishers)
-osmdata_railway <- hi_get_osm(fishers,key='railway')
+fishers2 <- mt_as_move2(fishers)
+osmdata <- hi_get_osm(fishers2)
+osmdata_railway <- hi_get_osm(fishers2,key='railway')
 }
 
 }
