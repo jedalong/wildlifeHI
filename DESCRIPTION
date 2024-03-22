@@ -2,14 +2,8 @@ Type: Package
 Package: wildlifeHI
 Title: Human Infrastructure and Wildlife Tracking Data
 Version: 0.1.0
-Authors@R: 
-    person("Jed", "Long", , "jed.long@uwo.ca", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-2815-0399"), 
-    person("Matthew", "Ketchin", ,"mketchin@uwo.ca", role = c("aut"))
-Description: A suite of basic tools for studying how wildlife are impacted
-    by human infrastructure using tracking data. It focuses largely on
-    working with Open Street Map data. It allows the user to easily
-    perform distance, crossing, and buffer analysis.
+Authors@R: c(person(given="Jed", family="Long", email= "jed.long@uwo.ca", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-2815-0399")), person(given="Matthew", family="Ketchin", email= "mketchin@uwo.ca", role = "aut"))
+Description: A suite of basic tools for studying how wildlife are impacted by human infrastructure using tracking data. It focuses largely on working with Open Street Map data. It allows the user to easily perform distance, crossing, and buffer analysis.
 License: GPL-3
 URL: https://github.com/jedalong/wildlifeHI
 Depends: 

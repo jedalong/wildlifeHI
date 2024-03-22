@@ -17,10 +17,10 @@ hi_recreation(move, cookies = NULL, env_name = "wild_hi_recreation")
 This function returns a \code{move2} object with the R, G, B, and A pixel values and the calculated intensity values appended from the Strava Global Heatmap.
 }
 \description{
-The main function, `hi_recreation()`, calculates the intensity of outdoor recreation along the GPS track provided.
+Attach outdoor recreation activity levels to GPS tracking data.
 }
 \details{
-To use the `hi_recreation()` function, you will need access to a Strava account that has had some activity.
+To use the `hi_recreation()` function, you will need access to an active Strava account.
  In `hi_recreation()`, pixel values are obtained from the Strava Global Heatmap and an intensity of use is calculated based on those pixel values along the GPS track provided as input. This can be useful for determining if individuals avoid or prefer areas of high human activity.
 }
 \examples{
