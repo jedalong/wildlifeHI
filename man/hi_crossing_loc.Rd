@@ -26,12 +26,14 @@ This tool simply calculates where crossings occurs from tracking fixes in relati
 }
 \examples{
 \dontrun{
+library(move)
+library(move2)
 data(fishers)
-## x1 <- hi_crossing_loc(fishers)  #Takes 2270 seconds
-x2 <- hi_crossing_loc(fishers,crs_code=32618)  ## takes 12 seconds
+fishers2 <- mt_as_move2(fishers)
+## x1 <- hi_crossing_loc(fishers2)  #Takes 2270 seconds
+x2 <- hi_crossing_loc(fishers2,crs_code=32618)  ## takes 12 seconds
 
-libray(mapview)
-mapview(x2['value'])
+ggplot() + geom_sf(data=x2, aes(color = value)) + coord_sf()
 }
 
 }

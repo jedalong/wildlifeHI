@@ -7,7 +7,7 @@
 hi_crossing(move, osmdata, ...)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
+\item{move}{an object of the class \code{move2}. For more information on objects of this type see \code{help(move2)}.}
 
 \item{osmdata}{an \code{sf} object containing human infrastructure data formatted similar to OSM data. 
 See \code{?hi_get_osm}.}
@@ -15,7 +15,7 @@ See \code{?hi_get_osm}.}
 \item{...}{additional parameters passed to \code{hi_get_osm}}
 }
 \value{
-This function returns a \code{MoveStack} object containing the original tracking
+This function returns a \code{move2} object containing the original tracking
   data with three additional columns:
  - crossing_true: a logical variable indicating whether a segment crossed any linear features.
  - crossing_key: the OSM key of the feature that was crossed in \code{osmdata}
@@ -31,8 +31,10 @@ This tool simply calculates whether crossing occurs from every segment of consec
 \examples{
 \dontrun{
 library(move)
+library(move2)
 data(fishers)
-fishers_c <- hi_crossing(fishers)
+fishers2 <- mt_as_move2(fishers)
+fishers_c <- hi_crossing(fishers2)
 table(fishers_c$crossing_value)
 }
 

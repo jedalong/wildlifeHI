@@ -7,7 +7,7 @@
 hi_buffer(move, r = 100, osmdata, crs_code, return = "move", ...)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
+\item{move}{an object of the class \code{move2}. For more information on objects of this type see \code{help(move2)}.}
 
 \item{r}{distance (in appropriate units) to buffer the human infrastructure data.}
 
@@ -15,12 +15,12 @@ hi_buffer(move, r = 100, osmdata, crs_code, return = "move", ...)
 
 \item{crs_code}{(optional) a CRS code to "project" data prior to performing buffer analysis. Can be used to speed up the processing substantially due to \code{sf} using different libraries for geoprocessing projected vs geographic coordinate systems.}
 
-\item{return}{one of 'move' (default) or 'buffer'. Default is to return a \code{move} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned.}
+\item{return}{one of 'move' (default) or 'buffer'. Default is to return a \code{move2} object of the trajectory. If return = 'buffer' a POLYGON with the buffer is returned.}
 
 \item{...}{additional parameters passed to \code{hi_get_osm}}
 }
 \value{
-This function returns by default a \code{move} object containing the tracking data with one additional column, \code{buf_code}, with the following levels:
+This function returns by default a \code{move2} object containing the tracking data with one additional column, \code{buf_code}, with the following levels:
  - buf_code = 'enters' - movement from outside to inside the buffer zone
  - buf_code = 'within' - movement within the buffer zone
  - buf_code = 'exists' - movement from inside to outside the buffer zone
@@ -38,15 +38,18 @@ This tool computes when a trajectory enters, remains within, and exits a buffer 
 }
 \examples{
 \dontrun{
+library(move)
+library(move2)
 data(fishers)
-fishers_buf <- hi_buffer(fishers,r=50,crs_code=32618)
+fishers2 <- mt_as_move2(fishers)
+fishers_buf <- hi_buffer(fishers2,r=50,crs_code=32618)
 
-library(mapview)
-mapview(fishers_buf['buf_code'])
+library(ggplot2)
+ggplot() + geom_sf(data=fishers_buf, aes(color = buf_code)) + coord_sf()
 
-buf_50 <- hi_buffer(fishers,r=50,crs_code=32618,return="buffer")
+buf_50 <- hi_buffer(fishers2,r=50,crs_code=32618,return="buffer")
 
-mapview(buf_50) + mapview(fishers_buf['buf_code'])
+ggplot() + geom_sf(data=fishers_buf, aes(color = track)) + geom_sf(data=buf_50) + coord_sf()
 }
 
 }

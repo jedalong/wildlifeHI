@@ -18,12 +18,14 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(move)
+#' library(move2)
 #' data(fishers)
-#' ## x1 <- hi_crossing_loc(fishers)  #Takes 2270 seconds
-#' x2 <- hi_crossing_loc(fishers,crs_code=32618)  ## takes 12 seconds
+#' fishers2 <- mt_as_move2(fishers)
+#' ## x1 <- hi_crossing_loc(fishers2)  #Takes 2270 seconds
+#' x2 <- hi_crossing_loc(fishers2,crs_code=32618)  ## takes 12 seconds
 #' 
-#' libray(mapview)
-#' mapview(x2['value'])
+#' ggplot() + geom_sf(data=x2, aes(color = value)) + coord_sf()
 #' }
 #' 
 #' @export
@@ -32,15 +34,10 @@
 
 hi_crossing_loc <- function(move,osmdata,crs_code,...){
   
-  tz <- attr(timestamps(move),'tzone')
-  #check input data type
-  if (!inherits(move,'MoveStack')){
-    if (inherits(move,'Move')){
-      move <- moveStack(move, forceTz=tz) #fix this timestamp to correct time zone
-    } else {
-      print('Input Data not of class MoveStack. Returning NULL.')
-      return(NULL)
-    }
+  #check if move2
+  if(!inherits(move, "move2")){
+    print('Input data not of class move2. Returning NULL.')
+    return(NULL)
   }
   
   #GET OSM Data and return Null if none exists.
@@ -50,20 +47,20 @@ hi_crossing_loc <- function(move,osmdata,crs_code,...){
   if (is.null(osmdata)){ return(NULL)}
   
   #grab projection of data
-  data_crs <- st_crs(move)
+  data_crs <- sf::st_crs(move)
   
   #Use a projected coordinate system if specified - MAKES INTERSECTION WORK WAY BETTER
   if (missing(crs_code)){ crs_code = data_crs }
-  osmdata <- st_transform(osmdata,crs=crs_code)
+  osmdata <- sf::st_transform(osmdata,crs=crs_code)
   
   # Create linestrings
   sf_ln <- internal_hi_move2line(move) |> 
-    st_transform(crs=crs_code)
+    sf::st_transform(crs=crs_code)
   
   #get locations of crossings (lines/poly boundaries)
   #Check reverse ordering if slow...
-  suppressWarnings(sf_int <- st_intersection(sf_ln,osmdata))
+  suppressWarnings(sf_int <- sf::st_intersection(osmdata,sf_ln))
   
-  sf_int <- st_transform(sf_int,data_crs)
+  sf_int <- sf::st_transform(sf_int,data_crs)
   return(sf_int)
 }

@@ -1,22 +1,30 @@
-Package: wildlifeHI
 Type: Package
+Package: wildlifeHI
 Title: Human Infrastructure and Wildlife Tracking Data
 Version: 0.1.0
-Authors@R: person(given="Jed", 
-                  family="Long",
-                  role=c("aut","cre"),
-                  email="jed.long@uwo.ca", 
-                  comment = c(ORCID = "0000-0002-2815-0399"))
-Description: A suite of basic tools for studying how wildlife are impacted by human infrastructure using tracking data. It focuses largely on working with Open Street Map data. It allows the user to easily perform distance, crossing, and buffer analysis.
-URL: https://github.com/jedalong/wildlifeHI
-Depends: R (>= 4.2.0)
-Imports:
-	sf,
-	osmdata,
-	move,
-	dplyr,
-	units,
-	rlang
+Authors@R: 
+    person("Jed", "Long", , "jed.long@uwo.ca", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-2815-0399"))
+Description: A suite of basic tools for studying how wildlife are impacted
+    by human infrastructure using tracking data. It focuses largely on
+    working with Open Street Map data. It allows the user to easily
+    perform distance, crossing, and buffer analysis.
 License: GPL-3
-RoxygenNote: 7.2.3
+URL: https://github.com/jedalong/wildlifeHI
+Depends: 
+    R (>= 4.2.0)
+Imports:
+    base,
+    dplyr,
+    fs,
+    move,
+    move2,
+    osmdata,
+    reticulate,
+    rlang,
+    sf,
+    tools,
+    units
 Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3

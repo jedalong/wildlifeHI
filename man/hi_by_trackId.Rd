@@ -7,14 +7,14 @@
 hi_by_trackId(move, fun = "hi_distance", ...)
 }
 \arguments{
-\item{move}{an object of the class \code{move}. For more information on objects of this type see \code{help(move)}.}
+\item{move}{an object of the class \code{move2}. For more information on objects of this type see \code{help(move2)}.}
 
 \item{fun}{a character string specifying which function to apply to each \code{trackId}. E.g., one of "hi_distance", "hi_crossing", "hi_buffer", etc.}
 
 \item{...}{additional parameters passed to the function \code{fun} or to \code{hi_get_osm}.}
 }
 \value{
-This function returns either a \code{move} containing the original tracking data with analysis defined by 'fun' applied.
+This function returns either a \code{move2} containing the original tracking data with analysis defined by 'fun' applied.
 }
 \description{
 This function is a wrapper used to automate processing of HI functions by trackId.
@@ -24,7 +24,9 @@ This tool is used to automate the processing of HI analysis by \code{trackId}. I
 }
 \examples{
 \dontrun{
+library(move2)
 data(fishers)
-fishers <- hi_by_trackId(fishers,fun="hi_distance",key="highway", value="track") 
+fishers2 <- mt_as_move2(fishers)
+fishers_d <- hi_by_trackId(fishers2,fun="hi_distance", key="highway", value="track") 
 }
 }
