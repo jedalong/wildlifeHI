@@ -12,8 +12,7 @@
 #' @author Jed Long
 #' @author Matthew Ketchin
 #' 
-#' @import move2 sf osmdata units dplyr reticulate
-#
+#' @import move move2 sf osmdata units dplyr reticulate fs tools rlang
 #' @docType package
 #' @name wildlifeHI-package
 NULL

@@ -4,7 +4,8 @@ Title: Human Infrastructure and Wildlife Tracking Data
 Version: 0.1.0
 Authors@R: 
     person("Jed", "Long", , "jed.long@uwo.ca", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-2815-0399"))
+           comment = c(ORCID = "0000-0002-2815-0399"), 
+    person("Matthew", "Ketchin", ,"mketchin@uwo.ca", role = c("aut"))
 Description: A suite of basic tools for studying how wildlife are impacted
     by human infrastructure using tracking data. It focuses largely on
     working with Open Street Map data. It allows the user to easily
@@ -14,7 +15,6 @@ URL: https://github.com/jedalong/wildlifeHI
 Depends: 
     R (>= 4.2.0)
 Imports:
-    base,
     dplyr,
     fs,
     move,
