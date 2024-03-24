@@ -10,3 +10,4 @@
 ^\testing
 ^\.git$
 ^testing$
+^\.github$
