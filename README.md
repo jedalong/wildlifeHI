@@ -8,6 +8,11 @@ output: github_document
 
 # wildlifeHI
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/MattK-16/wildlifeHI/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MattK-16/wildlifeHI/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+
 [![](https://cranlogs.r-pkg.org/badges/wildlifeHI)](https://cran.r-project.org/package=wildlifeHI)
 
 The wildlifeHI package facilitates the integration of human infrastructure data from OpenStreetMap with wildlife tracking data. Specifically, it allows users to quickly and efficiently perform various types of analysis by combining wildlife tracking data with OSM layers.
