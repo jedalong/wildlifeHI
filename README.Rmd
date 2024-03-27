@@ -12,6 +12,10 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/MattK-16/wildlifeHI/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MattK-16/wildlifeHI/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 # wildlifeHI
 
 [![](https://cranlogs.r-pkg.org/badges/wildlifeHI)](https://cran.r-project.org/package=wildlifeHI)

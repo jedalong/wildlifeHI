@@ -56,8 +56,3 @@ hi_recreation_init_conda_helper <- function(env_name = "wild_hi_recreation") {
   reticulate::use_condaenv(env_name, required = TRUE)
   return(env_name)
 }
-
-#### MATT CHECK THAT THIS SHOULD BE HERE!?!?!? THIS WONT WORK IN A PACKAGE FORMAT?
-#set a state
-the <- new.env(parent = emptyenv())
-the$first_time <- TRUE
